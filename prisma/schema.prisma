@@ -1,0 +1,357 @@
+// Prisma Schema - WebSeg SaaS
+// Multi-tenant schema with tenantId isolation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  SUPER_ADMIN
+  PARTNER_ADMIN
+  TECHNICIAN
+  CUSTOMER
+}
+
+enum TenantStatus {
+  TRIAL
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum TenantPlan {
+  FREE_TRIAL
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum ScheduleStatus {
+  AVAILABLE
+  RESERVED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ProductCategory {
+  CFTV
+  CERCA_ELETRICA
+  ALARME
+  SENSOR
+  AUTOMACAO
+  SERVICO
+  OUTROS
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  phone         String?
+  role          UserRole  @default(CUSTOMER)
+  tenantId      String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenant              Tenant?            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orders              Order[]            @relation("CustomerOrders")
+  assignedOrders      Order[]            @relation("TechnicianOrders")
+  technicianProfile   TechnicianProfile?
+  serviceRecords      ServiceRecord[]
+
+  @@index([tenantId])
+  @@index([email])
+  @@index([role])
+}
+
+model Tenant {
+  id              String       @id @default(cuid())
+  companyName     String
+  cnpj            String       @unique
+  subdomain       String       @unique
+  customDomain    String?      @unique
+  responsible     String
+  phone           String
+  email           String
+  status          TenantStatus @default(TRIAL)
+  plan            TenantPlan   @default(FREE_TRIAL)
+
+  // Personalização da loja
+  logo            String?
+  favicon         String?
+  primaryColor    String       @default("#6366f1")
+  secondaryColor  String       @default("#818cf8")
+  accentColor     String       @default("#06d6a0")
+  bannerUrl       String?
+  bannerTitle     String?
+  bannerSubtitle  String?
+  aboutText       String?
+
+  // Endereço
+  addressStreet   String?
+  addressCity     String?
+  addressState    String?
+  addressZip      String?
+
+  // Contato visível na loja
+  publicPhone     String?
+  publicEmail     String?
+
+  trialEndsAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  users           User[]
+  products        Product[]
+  orders          Order[]
+  workingHours    WorkingHours[]
+  schedules       Schedule[]
+  coupons         Coupon[]
+
+  @@index([subdomain])
+  @@index([status])
+}
+
+model Product {
+  id                   String          @id @default(cuid())
+  tenantId             String
+  name                 String
+  slug                 String
+  description          String?         @db.Text
+  shortDescription     String?
+  price                Decimal         @db.Decimal(10, 2)
+  compareAtPrice       Decimal?        @db.Decimal(10, 2)
+  images               String[]
+  category             ProductCategory @default(CFTV)
+  estimatedDurationMin Int             @default(120)
+  stock                Int             @default(0)
+  trackStock           Boolean         @default(false)
+  isActive             Boolean         @default(true)
+  isFeatured           Boolean         @default(false)
+  sortOrder            Int             @default(0)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variants     ProductVariant[]
+  orderItems   OrderItem[]
+  upsellsFrom  UpsellProduct[] @relation("UpsellFrom")
+  upsellsTo    UpsellProduct[] @relation("UpsellTo")
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([category])
+  @@index([isActive])
+}
+
+model ProductVariant {
+  id          String  @id @default(cuid())
+  productId   String
+  name        String
+  description String?
+  price       Decimal @db.Decimal(10, 2)
+  sortOrder   Int     @default(0)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model UpsellProduct {
+  id              String @id @default(cuid())
+  productId       String
+  upsellProductId String
+
+  product       Product @relation("UpsellFrom", fields: [productId], references: [id], onDelete: Cascade)
+  upsellProduct Product @relation("UpsellTo", fields: [upsellProductId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, upsellProductId])
+}
+
+model Order {
+  id                  String      @id @default(cuid())
+  tenantId            String
+  customerId          String?
+  technicianId        String?
+  status              OrderStatus @default(PENDING_PAYMENT)
+  totalAmount         Decimal     @db.Decimal(10, 2)
+
+  // Mercado Pago
+  mpPreferenceId      String?
+  mpPaymentId         String?
+  mpStatus            String?
+
+  // Agendamento
+  scheduledDate       DateTime?
+  scheduledTimeStart  String?
+  scheduledTimeEnd    String?
+
+  // Dados do cliente (armazenados no pedido para histórico)
+  customerName        String
+  customerCpfEncrypted String
+  customerEmail       String
+  customerPhone       String
+
+  // Endereço de instalação
+  installAddress      String
+  installNumber       String?
+  installComplement   String?
+  installNeighborhood String?
+  installCity         String
+  installState        String
+  installZip          String
+
+  notes               String?    @db.Text
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer      User?           @relation("CustomerOrders", fields: [customerId], references: [id])
+  technician    User?           @relation("TechnicianOrders", fields: [technicianId], references: [id])
+  items         OrderItem[]
+  schedule      Schedule?
+  serviceRecord ServiceRecord?
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([customerId])
+  @@index([technicianId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String?
+  productName String
+  quantity    Int     @default(1)
+  unitPrice   Decimal @db.Decimal(10, 2)
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+model Schedule {
+  id           String         @id @default(cuid())
+  tenantId     String
+  date         DateTime       @db.Date
+  startTime    String         // "08:00"
+  endTime      String         // "10:00"
+  technicianId String?
+  orderId      String?        @unique
+  status       ScheduleStatus @default(AVAILABLE)
+  createdAt    DateTime       @default(now())
+
+  tenant     Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  order      Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, date])
+  @@index([status])
+}
+
+model WorkingHours {
+  id              String @id @default(cuid())
+  tenantId        String
+  dayOfWeek       Int    // 0=Sunday, 1=Monday, ..., 6=Saturday
+  startTime       String // "08:00"
+  endTime         String // "18:00"
+  slotDurationMin Int    @default(120) // Duração de cada slot em minutos
+  maxCapacity     Int    @default(1)   // Quantos serviços simultâneos
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, dayOfWeek])
+  @@index([tenantId])
+}
+
+model TechnicianProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  tenantId    String
+  specialties String[]
+  phone       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model ServiceRecord {
+  id            String    @id @default(cuid())
+  orderId       String    @unique
+  technicianId  String
+  checkInTime   DateTime?
+  checkOutTime  DateTime?
+  photos        String[]
+  clientSignature String?
+  notes         String?   @db.Text
+  reviewScore   Int?
+  reviewComment String?   @db.Text
+  createdAt     DateTime  @default(now())
+
+  order      Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  technician User  @relation(fields: [technicianId], references: [id])
+
+  @@index([technicianId])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Coupon {
+  id           String    @id @default(cuid())
+  tenantId     String
+  code         String
+  discountType String    // "PERCENTAGE" or "FIXED"
+  discountValue Decimal  @db.Decimal(10, 2)
+  maxUses      Int?
+  uses         Int       @default(0)
+  isActive     Boolean   @default(true)
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
