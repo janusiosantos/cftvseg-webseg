@@ -1,0 +1,363 @@
+/* =============================================
+   WebSeg - Technician App Design System
+   Mobile-first, premium design
+   ============================================= */
+
+/* Layout */
+.tech-app {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding-bottom: 72px;
+  font-family: var(--font-family);
+}
+
+/* Header */
+.tech-header {
+  background: var(--tenant-primary, #6366f1);
+  color: #fff;
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.tech-header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.tech-header-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.tech-header-greeting {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.tech-header-logout {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  text-decoration: none;
+  transition: background 200ms;
+}
+
+.tech-header-logout:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.tech-header-logout svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Main Content */
+.tech-main {
+  max-width: 560px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 20px 16px;
+}
+
+/* Summary Card */
+.tech-summary {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  margin-bottom: 24px;
+}
+
+.tech-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.tech-summary-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tech-summary-date {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.tech-summary-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tenant-primary, #6366f1);
+  background: rgba(99,102,241,0.08);
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 200ms;
+}
+
+.tech-summary-sync:hover {
+  background: rgba(99,102,241,0.14);
+}
+
+.tech-summary-sync svg {
+  width: 14px;
+  height: 14px;
+}
+
+.tech-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.tech-stat-box {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.tech-stat-box.blue {
+  background: #eff6ff;
+  border-color: #dbeafe;
+}
+
+.tech-stat-box.green {
+  background: #f0fdf4;
+  border-color: #dcfce7;
+}
+
+.tech-stat-number {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.tech-stat-box.blue .tech-stat-number { color: #1d4ed8; }
+.tech-stat-box.green .tech-stat-number { color: #15803d; }
+
+.tech-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tech-stat-box.blue .tech-stat-label { color: #3b82f6; }
+.tech-stat-box.green .tech-stat-label { color: #22c55e; }
+
+/* Section Title */
+.tech-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+  padding-left: 2px;
+}
+
+/* Service Cards */
+.tech-services {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tech-service-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  overflow: hidden;
+}
+
+.tech-service-header {
+  padding: 16px;
+  border-bottom: 1px solid #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tech-service-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tech-service-id {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.tech-service-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tech-service-status.scheduled {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.tech-service-status.in-progress {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+/* Service Details */
+.tech-service-body {
+  padding: 16px;
+  background: #fafbfc;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tech-service-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.tech-service-detail svg {
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.tech-service-detail strong {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.tech-whatsapp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px;
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 200ms;
+}
+
+.tech-whatsapp-btn:hover {
+  background: #16a34a;
+  color: #fff;
+}
+
+.tech-whatsapp-btn svg {
+  width: 16px;
+  height: 16px;
+  color: #fff;
+}
+
+/* Service Actions */
+.tech-service-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #f1f5f9;
+  background: #fff;
+}
+
+/* Empty State */
+.tech-empty {
+  text-align: center;
+  padding: 40px 20px;
+  background: #fff;
+  border-radius: 16px;
+  border: 2px dashed #e2e8f0;
+}
+
+.tech-empty svg {
+  width: 44px;
+  height: 44px;
+  color: #22c55e;
+  margin: 0 auto 12px;
+  opacity: 0.4;
+}
+
+.tech-empty-text {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* Bottom Navigation */
+.tech-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  z-index: 20;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.tech-bottom-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.tech-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 200ms;
+}
+
+.tech-nav-link:hover,
+.tech-nav-link.active {
+  color: var(--tenant-primary, #6366f1);
+}
+
+.tech-nav-link svg {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 3px;
+}
+
+.tech-nav-label {
+  font-size: 10px;
+  font-weight: 600;
+}

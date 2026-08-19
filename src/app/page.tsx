@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import "./landing.css";
 import { PLANS } from "@/lib/constants";
+import { Shield, Video, Camera, Zap, ShoppingCart, CalendarDays, CreditCard, BarChart, HardHat, Mail, Rocket, CircleDollarSign, Lock, Smartphone, CheckCircle, XCircle } from "lucide-react";
 
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -72,7 +73,7 @@ export default function LandingPage() {
       <nav className={`landing-nav ${isScrolled ? "scrolled" : ""}`}>
         <div className="nav-inner">
           <a href="/" className="nav-logo">
-            <span className="logo-icon">🛡️</span>
+            <span className="logo-icon"><Shield size={24} /></span>
             WebSeg
           </a>
           <div className="nav-links">
@@ -147,17 +148,17 @@ export default function LandingPage() {
                   </div>
                   <div className="mockup-content">
                     <div className="mockup-card">
-                      <div className="mockup-card-img">📹</div>
+                      <div className="mockup-card-img" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><Video size={32} color="#64748b" /></div>
                       <div className="mockup-card-title">Kit 4 Câmeras HD</div>
                       <div className="mockup-card-price">R$ 1.299,90</div>
                     </div>
                     <div className="mockup-card">
-                      <div className="mockup-card-img">📷</div>
+                      <div className="mockup-card-img" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><Camera size={32} color="#64748b" /></div>
                       <div className="mockup-card-title">Kit 8 Câmeras Full HD</div>
                       <div className="mockup-card-price">R$ 2.499,90</div>
                     </div>
                     <div className="mockup-card">
-                      <div className="mockup-card-img">⚡</div>
+                      <div className="mockup-card-img" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><Zap size={32} color="#64748b" /></div>
                       <div className="mockup-card-title">Cerca Elétrica 60m</div>
                       <div className="mockup-card-price">R$ 1.899,90</div>
                     </div>
@@ -182,7 +183,7 @@ export default function LandingPage() {
 
           <div className="features-grid">
             <div className="glass-card feature-card animate-on-scroll">
-              <div className="feature-icon">🛒</div>
+              <div className="feature-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><ShoppingCart size={24} /></div>
               <h3 className="feature-title">Loja Online Personalizada</h3>
               <p className="feature-desc">
                 Sua vitrine digital com subdomínio próprio, cores, logo e banner personalizáveis. Sem precisar de desenvolvedor.
@@ -190,7 +191,7 @@ export default function LandingPage() {
             </div>
 
             <div className="glass-card feature-card animate-on-scroll">
-              <div className="feature-icon">📅</div>
+              <div className="feature-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><CalendarDays size={24} /></div>
               <h3 className="feature-title">Agendamento Integrado</h3>
               <p className="feature-desc">
                 O cliente escolhe a data da instalação direto no checkout. Sem trocas de mensagem, sem atrito.
@@ -198,7 +199,7 @@ export default function LandingPage() {
             </div>
 
             <div className="glass-card feature-card animate-on-scroll">
-              <div className="feature-icon">💳</div>
+              <div className="feature-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><CreditCard size={24} /></div>
               <h3 className="feature-title">Pagamento Seguro</h3>
               <p className="feature-desc">
                 Mercado Pago com validação de CPF integrada. Reduz chargebacks por &quot;compra não reconhecida&quot;.
@@ -206,7 +207,7 @@ export default function LandingPage() {
             </div>
 
             <div className="glass-card feature-card animate-on-scroll">
-              <div className="feature-icon">📊</div>
+              <div className="feature-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><BarChart size={24} /></div>
               <h3 className="feature-title">Painel Admin Completo</h3>
               <p className="feature-desc">
                 Gerencie produtos, pedidos, agenda de instalação e técnicos em um dashboard intuitivo e elegante.
@@ -214,7 +215,7 @@ export default function LandingPage() {
             </div>
 
             <div className="glass-card feature-card animate-on-scroll">
-              <div className="feature-icon">👷</div>
+              <div className="feature-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><HardHat size={24} /></div>
               <h3 className="feature-title">App para Técnicos</h3>
               <p className="feature-desc">
                 PWA mobile com ordens do dia, check-in/out, upload de fotos e relatório de serviço. Tudo no celular.
@@ -222,7 +223,7 @@ export default function LandingPage() {
             </div>
 
             <div className="glass-card feature-card animate-on-scroll">
-              <div className="feature-icon">📧</div>
+              <div className="feature-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><Mail size={24} /></div>
               <h3 className="feature-title">Notificações por E-mail</h3>
               <p className="feature-desc">
                 E-mails automáticos para cliente e parceiro: confirmação de pagamento, agendamento e atualizações.
@@ -355,19 +356,19 @@ export default function LandingPage() {
               </p>
               <ul className="contact-benefits">
                 <li>
-                  <span className="benefit-icon">🚀</span>
+                  <span className="benefit-icon" style={{ display: "inline-flex" }}><Rocket size={18} /></span>
                   Setup em menos de 30 minutos
                 </li>
                 <li>
-                  <span className="benefit-icon">💰</span>
+                  <span className="benefit-icon" style={{ display: "inline-flex" }}><CircleDollarSign size={18} /></span>
                   14 dias grátis para testar
                 </li>
                 <li>
-                  <span className="benefit-icon">🔒</span>
+                  <span className="benefit-icon" style={{ display: "inline-flex" }}><Lock size={18} /></span>
                   Pagamentos seguros via Mercado Pago
                 </li>
                 <li>
-                  <span className="benefit-icon">📱</span>
+                  <span className="benefit-icon" style={{ display: "inline-flex" }}><Smartphone size={18} /></span>
                   Suporte por e-mail incluso
                 </li>
               </ul>
@@ -447,9 +448,9 @@ export default function LandingPage() {
                 {formStatus === "loading"
                   ? "Enviando..."
                   : formStatus === "success"
-                  ? "✅ Mensagem enviada!"
+                  ? <><CheckCircle size={16} style={{ marginRight: "8px" }} /> Mensagem enviada!</>
                   : formStatus === "error"
-                  ? "❌ Erro. Tente novamente."
+                  ? <><XCircle size={16} style={{ marginRight: "8px" }} /> Erro. Tente novamente.</>
                   : "Solicitar demonstração →"}
               </button>
             </form>
@@ -463,7 +464,7 @@ export default function LandingPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <a href="/" className="nav-logo">
-                <span className="logo-icon">🛡️</span>
+                <span className="logo-icon"><Shield size={24} /></span>
                 WebSeg
               </a>
               <p>

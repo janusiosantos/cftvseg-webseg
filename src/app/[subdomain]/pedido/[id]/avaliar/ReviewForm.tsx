@@ -43,12 +43,12 @@ export function ReviewForm({ serviceRecordId }: { serviceRecordId: string }) {
 
   if (success) {
     return (
-      <div className="text-center py-8">
-        <div className="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-          ⭐
+      <div style={{ textAlign: "center", padding: "32px 0" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px", color: "#22c55e" }}>
+          <Star size={64} fill="#22c55e" color="#22c55e" />
         </div>
-        <h2 className="text-xl font-bold text-gray-800 mb-2">Avaliação Registrada!</h2>
-        <p className="text-gray-600">Muito obrigado pelo seu feedback.</p>
+        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#0f172a", marginBottom: "8px" }}>Avaliação Registrada!</h2>
+        <p style={{ color: "#64748b" }}>Muito obrigado pelo seu feedback.</p>
       </div>
     );
   }
@@ -56,42 +56,49 @@ export function ReviewForm({ serviceRecordId }: { serviceRecordId: string }) {
   return (
     <form onSubmit={handleSubmit}>
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg text-sm text-center">
+        <div style={{ marginBottom: "24px", padding: "16px", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", borderRadius: "8px", fontSize: "14px", textAlign: "center" }}>
           {error}
         </div>
       )}
 
-      <div className="flex justify-center gap-2 mb-8">
+      <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "32px" }}>
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
             type="button"
-            className="focus:outline-none transition-transform hover:scale-110"
+            style={{ 
+              background: "none", 
+              border: "none", 
+              cursor: "pointer", 
+              padding: "4px",
+              transition: "transform 0.2s"
+            }}
             onMouseEnter={() => setHoverScore(star)}
             onMouseLeave={() => setHoverScore(0)}
             onClick={() => setScore(star)}
+            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.9)")}
+            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
           >
             <Star
-              size={40}
-              className={`transition-colors ${
-                (hoverScore || score) >= star
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-200"
-              }`}
+              size={48}
+              fill={(hoverScore || score) >= star ? "#f59e0b" : "transparent"}
+              color={(hoverScore || score) >= star ? "#f59e0b" : "#cbd5e1"}
+              style={{ transition: "all 0.2s" }}
             />
           </button>
         ))}
       </div>
 
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div style={{ marginBottom: "24px" }}>
+        <label style={{ display: "block", fontSize: "14px", fontWeight: 600, color: "#334155", marginBottom: "8px" }}>
           Deixe um comentário (opcional)
         </label>
         <textarea
           rows={4}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="store-input"
+          style={{ resize: "none" }}
           placeholder="Como foi o atendimento do técnico?"
         />
       </div>
@@ -99,7 +106,8 @@ export function ReviewForm({ serviceRecordId }: { serviceRecordId: string }) {
       <button
         type="submit"
         disabled={loading || score === 0}
-        className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+        className="btn-store-primary"
+        style={{ width: "100%", justifyContent: "center" }}
       >
         {loading ? "Enviando..." : "Enviar Avaliação"}
       </button>

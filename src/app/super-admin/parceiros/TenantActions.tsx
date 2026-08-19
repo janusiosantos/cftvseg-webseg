@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ExternalLink, LayoutDashboard, Edit } from "lucide-react";
 
 interface TenantActionsProps {
   tenant: {
@@ -46,13 +47,13 @@ export function TenantActions({ tenant }: TenantActionsProps) {
   return (
     <div style={{ display: "flex", gap: "8px", position: "relative" }}>
       <Link href={`/?tenant=${tenant.subdomain}`} target="_blank" className="action-btn" title="Ver loja">
-        🔗
+        <ExternalLink size={18} />
       </Link>
       <Link href={`/?tenant=${tenant.subdomain}&path=/admin`} target="_blank" className="action-btn" title="Ver admin">
-        ⚙️
+        <LayoutDashboard size={18} />
       </Link>
       <button onClick={() => setIsOpen(!isOpen)} className="action-btn" title="Editar assinatura">
-        ✏️
+        <Edit size={18} />
       </button>
 
       {isOpen && (

@@ -1,5 +1,7 @@
 import { auth } from "@/lib/auth";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { BarChart, Building, MessageCircle, Shield } from "lucide-react";
 import "./super-admin.css";
 
 export default async function SuperAdminLayout({
@@ -17,24 +19,24 @@ export default async function SuperAdminLayout({
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <div className="sidebar-logo">
-          <span className="logo-icon">🛡️</span>
+          <span className="logo-icon"><Shield size={24} /></span>
           <span>WebSeg</span>
           <span className="sidebar-badge">Admin</span>
         </div>
 
         <nav className="sidebar-nav">
-          <a href="/super-admin" className="sidebar-link">
-            <span className="sidebar-icon">📊</span>
+          <Link href="/super-admin" className="sidebar-link">
+            <span className="sidebar-icon" style={{ display: "flex", alignItems: "center" }}><BarChart size={18} /></span>
             Dashboard
-          </a>
-          <a href="/super-admin/parceiros" className="sidebar-link">
-            <span className="sidebar-icon">🏢</span>
-            Parceiros
-          </a>
-          <a href="/super-admin/mensagens" className="sidebar-link">
-            <span className="sidebar-icon">💬</span>
+          </Link>
+          <Link href="/super-admin/parceiros" className="sidebar-link">
+            <span className="sidebar-icon" style={{ display: "flex", alignItems: "center" }}><Building size={18} /></span>
+            Parceiros (Tenants)
+          </Link>
+          <Link href="/super-admin/contatos" className="sidebar-link">
+            <span className="sidebar-icon" style={{ display: "flex", alignItems: "center" }}><MessageCircle size={18} /></span>
             Mensagens
-          </a>
+          </Link>
         </nav>
 
         <div className="sidebar-footer">

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { Building, CheckCircle, DollarSign, FlaskConical, ExternalLink } from "lucide-react";
 
 export default async function SuperAdminDashboard() {
   // Fetch stats
@@ -63,33 +64,27 @@ export default async function SuperAdminDashboard() {
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-card-header">
-            <div className="stat-card-icon">🏢</div>
-          </div>
+          <div className="stat-card-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><Building size={24} /></div>
           <div className="stat-card-value">{totalPartners}</div>
           <div className="stat-card-label">Parceiros Totais</div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-card-header">
-            <div className="stat-card-icon">✅</div>
-          </div>
+          <div className="stat-card-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(34, 197, 94, 0.1)", color: "#22c55e" }}><CheckCircle size={24} /></div>
           <div className="stat-card-value">{activePartners}</div>
           <div className="stat-card-label">Parceiros Ativos</div>
         </div>
 
         <div className="stat-card">
           <div className="stat-card-header">
-            <div className="stat-card-icon">💰</div>
+            <div className="stat-card-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><DollarSign size={24} /></div>
           </div>
           <div className="stat-card-value">{formatCurrency(mrr)}</div>
           <div className="stat-card-label">MRR (Receita Mensal)</div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-card-header">
-            <div className="stat-card-icon">🧪</div>
-          </div>
+          <div className="stat-card-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b" }}><FlaskConical size={24} /></div>
           <div className="stat-card-value">{trialPartners}</div>
           <div className="stat-card-label">Em Período Trial</div>
         </div>
@@ -106,7 +101,7 @@ export default async function SuperAdminDashboard() {
 
         {recentPartners.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">🏢</div>
+            <div className="empty-state-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px", color: "#64748b" }}><Building size={48} /></div>
             <h3 className="empty-state-title">Nenhum parceiro cadastrado</h3>
             <p className="empty-state-desc">Cadastre o primeiro parceiro para começar.</p>
             <Link href="/super-admin/parceiros/novo" className="btn-admin-primary">
@@ -158,14 +153,16 @@ export default async function SuperAdminDashboard() {
                   </td>
                   <td>{partner._count.products}</td>
                   <td>{partner._count.orders}</td>
-                  <td>
-                    <Link
-                      href={`/?tenant=${partner.subdomain}`}
-                      target="_blank"
+                  <td className="actions-cell">
+                    <a 
+                      href={`/?tenant=${partner.subdomain}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
                       className="action-btn"
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
                     >
-                      🔗 Loja
-                    </Link>
+                      <ExternalLink size={14} /> Loja
+                    </a>
                   </td>
                 </tr>
               ))}

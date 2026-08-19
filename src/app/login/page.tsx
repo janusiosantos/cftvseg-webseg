@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Shield, Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 import { Suspense } from "react";
 
@@ -12,6 +13,7 @@ function LoginForm() {
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -71,18 +73,49 @@ function LoginForm() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #0a0f1c 0%, #1a1040 50%, #0f172a 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%);
           padding: var(--space-lg);
+          position: relative;
+          overflow: hidden;
+        }
+        .login-page::before {
+          content: '';
+          position: absolute;
+          width: 800px;
+          height: 800px;
+          background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+          top: -200px;
+          left: -200px;
+          border-radius: 50%;
+          animation: float 10s ease-in-out infinite alternate;
+        }
+        .login-page::after {
+          content: '';
+          position: absolute;
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(6,214,160,0.05) 0%, transparent 70%);
+          bottom: -100px;
+          right: -100px;
+          border-radius: 50%;
+          animation: float 12s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes float {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(50px, 50px); }
         }
         .login-card {
           width: 100%;
           max-width: 420px;
-          background: rgba(255,255,255,0.05);
-          backdrop-filter: blur(16px);
+          background: rgba(15, 23, 42, 0.6);
+          backdrop-filter: blur(20px);
           border: 1px solid rgba(255,255,255,0.1);
-          border-radius: var(--radius-xl);
-          padding: var(--space-2xl);
-          animation: scaleIn 0.4s ease;
+          border-radius: 24px;
+          padding: 40px;
+          animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          position: relative;
+          z-index: 10;
         }
         .login-logo {
           display: flex;
@@ -137,23 +170,51 @@ function LoginForm() {
           color: var(--color-text-secondary);
           margin-bottom: var(--space-xs);
         }
+        .login-form .input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+        .login-form .input-icon {
+          position: absolute;
+          left: 14px;
+          color: var(--color-text-tertiary);
+        }
         .login-form .form-input {
           width: 100%;
-          padding: 12px 16px;
-          background: rgba(255,255,255,0.04);
+          padding: 12px 16px 12px 42px;
+          background: rgba(0,0,0,0.2);
           border: 1px solid rgba(255,255,255,0.1);
           border-radius: var(--radius-md);
           color: var(--color-text-primary);
           font-size: var(--font-size-base);
           outline: none;
-          transition: all 150ms ease;
+          transition: all 200ms ease;
         }
         .login-form .form-input:focus {
-          border-color: var(--color-primary);
+          border-color: var(--store-primary, #6366f1);
           box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+          background: rgba(0,0,0,0.4);
         }
         .login-form .form-input::placeholder {
+          color: rgba(255,255,255,0.3);
+        }
+        .toggle-password {
+          position: absolute;
+          right: 14px;
+          background: none;
+          border: none;
           color: var(--color-text-tertiary);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px;
+          border-radius: 4px;
+          transition: color 200ms;
+        }
+        .toggle-password:hover {
+          color: var(--color-text-secondary);
         }
         .login-submit {
           width: 100%;
@@ -190,7 +251,9 @@ function LoginForm() {
 
       <div className="login-card">
         <div className="login-logo">
-          <span className="logo-icon">🛡️</span>
+          <div className="logo-icon">
+            <Shield size={24} color="#fff" />
+          </div>
           WebSeg
         </div>
         <h1 className="login-title">Bem-vindo de volta</h1>
@@ -201,30 +264,44 @@ function LoginForm() {
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label" htmlFor="login-email">E-mail</label>
-            <input
-              id="login-email"
-              className="form-input"
-              type="email"
-              placeholder="seu@email.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-            />
+            <div className="input-wrapper">
+              <Mail size={18} className="input-icon" />
+              <input
+                id="login-email"
+                className="form-input"
+                type="email"
+                placeholder="seu@email.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
           </div>
 
           <div className="form-group">
             <label className="form-label" htmlFor="login-password">Senha</label>
-            <input
-              id="login-password"
-              className="form-input"
-              type="password"
-              placeholder="••••••••"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
+            <div className="input-wrapper">
+              <Lock size={18} className="input-icon" />
+              <input
+                id="login-password"
+                className="form-input"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+              <button 
+                type="button" 
+                className="toggle-password" 
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="login-submit" disabled={loading}>

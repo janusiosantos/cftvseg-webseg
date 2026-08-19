@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { Building } from "lucide-react";
 import { formatCurrency, formatCnpj } from "@/lib/utils";
 import { TenantActions } from "./TenantActions";
 
@@ -26,7 +27,7 @@ export default async function ParceirosPage() {
       <div className="data-table-wrapper">
         {partners.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">🏢</div>
+            <div className="empty-state-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px", color: "#64748b" }}><Building size={48} /></div>
             <h3 className="empty-state-title">Nenhum parceiro cadastrado</h3>
             <p className="empty-state-desc">Clique no botão acima para cadastrar o primeiro parceiro.</p>
           </div>

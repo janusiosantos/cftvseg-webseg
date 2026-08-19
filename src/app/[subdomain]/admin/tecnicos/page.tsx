@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Users, Plus, Star, Phone } from "lucide-react";
 
 interface Props {
   params: Promise<{ subdomain: string }>;
@@ -13,7 +14,13 @@ export default async function TecnicosPage({ params }: Props) {
 
   const technicians = await prisma.user.findMany({
     where: { tenantId: tenant.id, role: "TECHNICIAN" },
-    include: { technicianProfile: true },
+    include: { 
+      technicianProfile: true,
+      serviceRecords: {
+        where: { reviewScore: { not: null } },
+        select: { reviewScore: true }
+      }
+    },
   });
 
   return (
@@ -21,10 +28,10 @@ export default async function TecnicosPage({ params }: Props) {
       <div className="admin-page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <h1 className="admin-page-title">Técnicos</h1>
-          <p className="admin-page-subtitle">Gerencie sua equipe de instalação</p>
+          <p className="admin-page-subtitle">Gerencie sua equipe de instalação e avaliações</p>
         </div>
-        <Link href={`/admin/tecnicos/novo?tenant=${subdomain}`} className="btn-admin-primary" style={{ textDecoration: "none", display: "inline-block" }}>
-          + Novo Técnico
+        <Link href={`/admin/tecnicos/novo?tenant=${subdomain}`} className="btn-admin-primary" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
+          <Plus size={18} /> Novo Técnico
         </Link>
       </div>
 
@@ -36,7 +43,9 @@ export default async function TecnicosPage({ params }: Props) {
       }}>
         {technicians.length === 0 ? (
           <div style={{ padding: "48px", textAlign: "center", color: "#475569" }}>
-            <p style={{ fontSize: "48px", marginBottom: "16px" }}>👷</p>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px", color: "#64748b" }}>
+              <Users size={48} />
+            </div>
             <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#94a3b8" }}>Nenhum técnico cadastrado</h3>
             <p style={{ fontSize: "14px" }}>Adicione técnicos para realizar as instalações dos pedidos.</p>
           </div>
@@ -44,7 +53,7 @@ export default async function TecnicosPage({ params }: Props) {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                {["Técnico", "Contato", "Especialidades", "Status"].map((h) => (
+                {["Técnico", "Contato", "Avaliação NPS", "Especialidades", "Status"].map((h) => (
                   <th key={h} style={{
                     padding: "12px 16px",
                     textAlign: "left",
@@ -81,7 +90,24 @@ export default async function TecnicosPage({ params }: Props) {
                     </div>
                   </td>
                   <td style={{ padding: "14px 16px", fontSize: "13px", color: "#cbd5e1" }}>
-                    {tech.phone || tech.technicianProfile?.phone || "—"}
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <Phone size={14} /> {tech.phone || tech.technicianProfile?.phone || "—"}
+                    </div>
+                  </td>
+                  <td style={{ padding: "14px 16px" }}>
+                    {(() => {
+                      const records = tech.serviceRecords;
+                      if (!records || records.length === 0) return <span style={{ color: "#64748b", fontSize: "13px" }}>Sem avaliações</span>;
+                      
+                      const avgScore = records.reduce((acc, curr) => acc + (curr.reviewScore || 0), 0) / records.length;
+                      return (
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <Star size={16} fill="#fbbf24" color="#fbbf24" />
+                          <span style={{ fontSize: "14px", fontWeight: 700, color: "#f1f5f9" }}>{avgScore.toFixed(1)}</span>
+                          <span style={{ fontSize: "12px", color: "#64748b" }}>({records.length})</span>
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td style={{ padding: "14px 16px" }}>
                     <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>

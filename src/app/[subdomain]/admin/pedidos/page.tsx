@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { ORDER_STATUS_LABELS } from "@/lib/constants";
+import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { AssignTechnicianSelect } from "./AssignTechnicianSelect";
 import { OrderFilter } from "./OrderFilter";
@@ -62,10 +63,12 @@ export default async function PedidosPage(props: Props) {
         overflow: "hidden",
       }}>
         {orders.length === 0 ? (
-          <div style={{ padding: "48px", textAlign: "center", color: "#475569" }}>
-            <p style={{ fontSize: "48px", marginBottom: "16px" }}>📦</p>
-            <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#94a3b8" }}>Nenhum pedido ainda</h3>
-            <p style={{ fontSize: "14px" }}>Os pedidos aparecerão aqui quando clientes comprarem na sua loja.</p>
+          <div className="admin-empty-state">
+            <div className="admin-empty-icon" style={{ display: "flex", justifyContent: "center", marginBottom: "16px", color: "#475569" }}>
+              <ShoppingCart size={48} />
+            </div>
+            <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#94a3b8", textAlign: "center" }}>Nenhum pedido ainda</h3>
+            <p style={{ fontSize: "14px", textAlign: "center", color: "#64748b" }}>Os pedidos aparecerão aqui quando clientes comprarem na sua loja.</p>
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>

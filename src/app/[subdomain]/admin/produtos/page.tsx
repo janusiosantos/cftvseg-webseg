@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { DeleteProductButton } from "./DeleteProductButton";
+import { Package } from "lucide-react";
 
 interface Props {
   params: Promise<{ subdomain: string }>;
@@ -58,9 +59,11 @@ export default async function ProdutosAdminPage({ params }: Props) {
         overflow: "hidden",
       }}>
         {products.length === 0 ? (
-          <div style={{ padding: "48px", textAlign: "center", color: "#475569" }}>
-            <p style={{ fontSize: "48px", marginBottom: "16px" }}>📋</p>
-            <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#94a3b8" }}>Nenhum produto cadastrado</h3>
+          <div className="admin-empty-state" style={{ padding: "48px", textAlign: "center", color: "#475569" }}>
+            <div className="admin-empty-icon" style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+              <Package size={48} />
+            </div>
+            <h3 className="admin-empty-title" style={{ fontSize: "18px", fontWeight: 600, color: "#94a3b8" }}>Nenhum produto cadastrado</h3>
             <p style={{ fontSize: "14px" }}>Adicione seus kits e serviços para começar a vender.</p>
           </div>
         ) : (

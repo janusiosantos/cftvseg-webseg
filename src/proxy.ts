@@ -43,11 +43,10 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.next();
     }
 
-    // If tenant param exists, rewrite to _sites/[subdomain]
     if (tenantParam) {
-      url.pathname = `/_sites/${tenantParam}${url.pathname}`;
-      url.searchParams.delete("tenant");
-      const response = NextResponse.rewrite(url);
+      const newPath = `/${tenantParam}${url.pathname}`;
+      const rewriteUrl = new URL(newPath, req.url);
+      const response = NextResponse.rewrite(rewriteUrl);
       response.headers.set("x-tenant-subdomain", tenantParam);
       return response;
     }
@@ -91,9 +90,10 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Partner subdomain or custom domain → Rewrite to /_sites/[tenantIdentifier]
-  url.pathname = `/_sites/${tenantIdentifier}${url.pathname}`;
-  const response = NextResponse.rewrite(url);
+  // Partner subdomain or custom domain → Rewrite to /[tenantIdentifier]
+  const newPath = `/${tenantIdentifier}${url.pathname}`;
+  const rewriteUrl = new URL(newPath, req.url);
+  const response = NextResponse.rewrite(rewriteUrl);
   response.headers.set("x-tenant-subdomain", tenantIdentifier);
   return response;
 }

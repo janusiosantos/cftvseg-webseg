@@ -2,15 +2,16 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { Video, Zap, Bell, Radio, Home, Wrench, Package, Phone, Mail, MapPin } from "lucide-react";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  CFTV: "📹",
-  CERCA_ELETRICA: "⚡",
-  ALARME: "🔔",
-  SENSOR: "📡",
-  AUTOMACAO: "🏠",
-  SERVICO: "🔧",
-  OUTROS: "📦",
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  CFTV: <Video />,
+  CERCA_ELETRICA: <Zap />,
+  ALARME: <Bell />,
+  SENSOR: <Radio />,
+  AUTOMACAO: <Home />,
+  SERVICO: <Wrench />,
+  OUTROS: <Package />,
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -64,7 +65,9 @@ export default async function StorePage({ params }: Props) {
 
         {products.length === 0 ? (
           <div style={{ textAlign: "center", padding: "64px 0", color: "#94a3b8" }}>
-            <p style={{ fontSize: "48px", marginBottom: "16px" }}>📦</p>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px", color: "#cbd5e1" }}>
+              <Package size={48} />
+            </div>
             <p style={{ fontSize: "18px", fontWeight: 600 }}>Produtos em breve!</p>
             <p>Estamos preparando nosso catálogo.</p>
           </div>
@@ -82,7 +85,7 @@ export default async function StorePage({ params }: Props) {
                   className="product-card"
                 >
                   <div className="product-card-img">
-                    {CATEGORY_ICONS[product.category] || "📦"}
+                    {CATEGORY_ICONS[product.category] || <Package />}
                     {discount && (
                       <span className="product-card-badge">-{discount}%</span>
                     )}
@@ -123,14 +126,14 @@ export default async function StorePage({ params }: Props) {
 
             <div className="store-contact-info">
               {tenant.publicPhone && (
-                <div className="store-contact-item">📞 {tenant.publicPhone}</div>
+                <div className="store-contact-item"><Phone /> {tenant.publicPhone}</div>
               )}
               {tenant.publicEmail && (
-                <div className="store-contact-item">📧 {tenant.publicEmail}</div>
+                <div className="store-contact-item"><Mail /> {tenant.publicEmail}</div>
               )}
               {tenant.addressCity && (
                 <div className="store-contact-item">
-                  📍 {tenant.addressCity}/{tenant.addressState}
+                  <MapPin /> {tenant.addressCity}/{tenant.addressState}
                 </div>
               )}
             </div>

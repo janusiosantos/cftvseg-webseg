@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { CreateCouponForm } from "./CreateCouponForm";
 import { formatCurrency, formatDateLong } from "@/lib/utils";
-import { Trash2 } from "lucide-react";
 import { DeleteCouponButton } from "./DeleteCouponButton";
 
 interface Props {
@@ -27,72 +26,86 @@ export default async function AdminCouponsPage({ params }: Props) {
     },
   });
 
-  if (!tenant || tenant.id !== session.user.tenantId) {
+  if (!tenant) {
+    notFound();
+  }
+
+  if (session.user.role === "PARTNER_ADMIN" && tenant.id !== session.user.tenantId) {
     notFound();
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Cupons de Desconto</h1>
-          <p className="text-gray-500 mt-1">Crie promoções e fidelize seus clientes.</p>
-        </div>
+    <>
+      <div className="admin-page-header">
+        <h1 className="admin-page-title">Cupons de Desconto</h1>
+        <p className="admin-page-subtitle">Crie promoções e fidelize seus clientes.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="admin-grid-2" style={{ gridTemplateColumns: "350px 1fr", gap: "24px" }}>
         {/* Form Column */}
-        <div className="lg:col-span-1">
+        <div>
           <CreateCouponForm tenantId={tenant.id} />
         </div>
 
         {/* List Column */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div>
+          <div className="admin-table-wrapper">
             {tenant.coupons.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                Nenhum cupom cadastrado ainda.
+              <div className="admin-empty-state">
+                <h3 className="admin-empty-title">Nenhum cupom cadastrado</h3>
+                <p className="admin-empty-desc">Crie seu primeiro cupom ao lado.</p>
               </div>
             ) : (
-              <table className="w-full text-left text-sm text-gray-600">
-                <thead className="bg-gray-50 border-b border-gray-100 text-gray-700">
+              <table className="admin-table">
+                <thead>
                   <tr>
-                    <th className="px-6 py-4 font-semibold">Cupom</th>
-                    <th className="px-6 py-4 font-semibold">Desconto</th>
-                    <th className="px-6 py-4 font-semibold">Uso</th>
-                    <th className="px-6 py-4 font-semibold">Status</th>
-                    <th className="px-6 py-4 font-semibold text-right">Ação</th>
+                    <th>Cupom</th>
+                    <th>Desconto</th>
+                    <th>Uso</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: "right" }}>Ação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                   {tenant.coupons.map((coupon) => {
                     const isExpired = coupon.expiresAt && new Date(coupon.expiresAt) < new Date();
                     const isMaxedOut = coupon.maxUses && coupon.uses >= coupon.maxUses;
                     const isActive = coupon.isActive && !isExpired && !isMaxedOut;
 
                     return (
-                      <tr key={coupon.id} className="hover:bg-gray-50/50">
-                        <td className="px-6 py-4">
-                          <span className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded">
+                      <tr key={coupon.id}>
+                        <td>
+                          <span style={{ 
+                            fontFamily: "monospace", 
+                            fontWeight: 700, 
+                            color: "#818cf8",
+                            background: "rgba(99,102,241,0.1)",
+                            padding: "4px 8px",
+                            borderRadius: "4px"
+                          }}>
                             {coupon.code}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-medium">
+                        <td style={{ fontWeight: 600, color: "#f1f5f9" }}>
                           {coupon.discountType === "PERCENTAGE"
                             ? `${Number(coupon.discountValue)}%`
                             : formatCurrency(Number(coupon.discountValue))}
                         </td>
-                        <td className="px-6 py-4">
+                        <td>
                           {coupon.uses} {coupon.maxUses ? `/ ${coupon.maxUses}` : ""}
                         </td>
-                        <td className="px-6 py-4">
+                        <td>
                           {isActive ? (
-                            <span className="inline-flex px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Ativo</span>
+                            <span className="admin-badge" style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e" }}>
+                              <span className="admin-badge-dot" /> Ativo
+                            </span>
                           ) : (
-                            <span className="inline-flex px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">Inativo</span>
+                            <span className="admin-badge" style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444" }}>
+                              <span className="admin-badge-dot" /> Inativo
+                            </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td style={{ textAlign: "right" }}>
                           <DeleteCouponButton id={coupon.id} />
                         </td>
                       </tr>
@@ -104,6 +117,6 @@ export default async function AdminCouponsPage({ params }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

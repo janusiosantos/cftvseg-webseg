@@ -27,10 +27,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 O sistema usa **subdomain-based routing** em produção e **query param** (`?tenant=subdomain`) em desenvolvimento.
 
-### Roteamento (middleware.ts)
-- **Dev (localhost):** `?tenant=acme` → reescrita para `/_sites/acme/...`
-- **Prod:** `acme.opensoftware.com.br` → reescrita para `/_sites/acme/...`
-- **Custom Domain:** `www.acmeloja.com.br` → reescrita para `/_sites/acmeloja/...`
+### Roteamento (proxy.ts)
+- **Dev (localhost):** `?tenant=acme` → reescrita para `/[subdomain]/...`
+- **Prod:** `acme.opensoftware.com.br` → reescrita para `/[subdomain]/...`
+- **Custom Domain:** `www.acmeloja.com.br` → reescrita para `/[subdomain]/...`
 - **Admin:** `admin.opensoftware.com.br` → `/super-admin/...`
 - **Root:** `cftveseg.opensoftware.com.br` ou `www.opensoftware.com.br` → Landing Page (/)
 
@@ -48,9 +48,9 @@ CUSTOMER → Cliente final (placeholder, não faz login hoje).
 
 ```
 c:\CFTVSEG\webseg\
-├── middleware.ts                    # Roteamento multi-tenant
 ├── prisma/schema.prisma            # Schema do banco de dados
 ├── src/
+│   ├── proxy.ts                    # Roteamento multi-tenant
 │   ├── app/
 │   │   ├── (landing)/              # Landing page institucional (grupo de rota)
 │   │   ├── page.tsx                # Landing page principal (/)
@@ -62,7 +62,7 @@ c:\CFTVSEG\webseg\
 │   │   │   ├── page.tsx            # Dashboard principal
 │   │   │   ├── parceiros/          # CRUD de parceiros/tenants
 │   │   │   │   └── novo/           # Formulário de criação
-│   │   ├── _sites/[subdomain]/     # ★ ROTAS DO TENANT (core do SaaS)
+│   │   ├── [subdomain]/            # ★ ROTAS DO TENANT (core do SaaS)
 │   │   │   ├── layout.tsx          # Layout da loja (CSS vars com cores do tenant)
 │   │   │   ├── page.tsx            # Vitrine/catálogo de produtos
 │   │   │   ├── produto/[slug]/     # Página de detalhe do produto

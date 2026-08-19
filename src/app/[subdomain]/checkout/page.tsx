@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { validateCpf as validateCpfLib } from "@/lib/cpf";
+import { User, MapPin, CalendarClock, Shield, CreditCard, CheckCircle2, ChevronRight, Loader2, Tag, ShoppingCart, CalendarDays } from "lucide-react";
 
 interface Product {
   id: string;
@@ -73,6 +74,27 @@ function CheckoutForm() {
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleCepBlur() {
+    const cep = form.installZip.replace(/\D/g, "");
+    if (cep.length !== 8) return;
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (!data.erro) {
+        setForm((prev) => ({
+          ...prev,
+          installAddress: data.logradouro || prev.installAddress,
+          installNeighborhood: data.bairro || prev.installNeighborhood,
+          installCity: data.localidade || prev.installCity,
+          installState: data.uf || prev.installState,
+        }));
+      }
+    } catch (err) {
+      console.error("Erro ao buscar CEP", err);
+    }
   }
 
   function selectSlot(slot: Slot) {
@@ -164,32 +186,65 @@ function CheckoutForm() {
         }
         .checkout-steps {
           display: flex;
-          gap: 0;
-          margin-bottom: 32px;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 40px;
+          position: relative;
+        }
+        .checkout-steps::before {
+          content: '';
+          position: absolute;
+          top: 20px;
+          left: 40px;
+          right: 40px;
+          height: 2px;
+          background: #e2e8f0;
+          z-index: 0;
         }
         .checkout-step {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
           flex: 1;
-          text-align: center;
-          padding: 12px;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
+          cursor: pointer;
+        }
+        .checkout-step-icon {
+          width: 40px;
+          height: 40px;
+          background: #fff;
+          border: 2px solid #e2e8f0;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #94a3b8;
+          transition: all 200ms;
+        }
+        .checkout-step-label {
           font-size: 13px;
           font-weight: 600;
           color: #94a3b8;
-          cursor: pointer;
           transition: all 200ms;
+          text-align: center;
         }
-        .checkout-step:first-child { border-radius: 8px 0 0 8px; }
-        .checkout-step:last-child { border-radius: 0 8px 8px 0; }
-        .checkout-step.active {
-          background: var(--store-primary, #6366f1);
-          color: #fff;
+        .checkout-step.active .checkout-step-icon {
           border-color: var(--store-primary, #6366f1);
+          color: var(--store-primary, #6366f1);
+          box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
         }
-        .checkout-step.completed {
-          background: #dcfce7;
-          color: #16a34a;
-          border-color: #bbf7d0;
+        .checkout-step.active .checkout-step-label {
+          color: var(--store-primary, #6366f1);
+        }
+        .checkout-step.completed .checkout-step-icon {
+          background: var(--store-primary, #6366f1);
+          border-color: var(--store-primary, #6366f1);
+          color: #fff;
+        }
+        .checkout-step.completed .checkout-step-label {
+          color: #0f172a;
         }
         .checkout-section {
           background: #fff;
@@ -418,13 +473,16 @@ function CheckoutForm() {
         {/* Steps Indicator */}
         <div className="checkout-steps">
           <div className={`checkout-step ${step >= 1 ? (step > 1 ? "completed" : "active") : ""}`} onClick={() => setStep(1)}>
-            1. Dados Pessoais
+            <div className="checkout-step-icon">{step > 1 ? <CheckCircle2 size={20} /> : <User size={20} />}</div>
+            <div className="checkout-step-label">Dados Pessoais</div>
           </div>
           <div className={`checkout-step ${step >= 2 ? (step > 2 ? "completed" : "active") : ""}`} onClick={() => step > 1 && setStep(2)}>
-            2. Endereço
+            <div className="checkout-step-icon">{step > 2 ? <CheckCircle2 size={20} /> : <MapPin size={20} />}</div>
+            <div className="checkout-step-label">Endereço</div>
           </div>
           <div className={`checkout-step ${step >= 3 ? "active" : ""}`} onClick={() => step > 2 && setStep(3)}>
-            3. Agendamento & Pagamento
+            <div className="checkout-step-icon"><CalendarClock size={20} /></div>
+            <div className="checkout-step-label">Agendamento</div>
           </div>
         </div>
 
@@ -442,7 +500,7 @@ function CheckoutForm() {
           {/* Step 1: Personal Data */}
           {step === 1 && (
             <div className="checkout-section">
-              <h3>👤 Dados Pessoais</h3>
+              <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}><User size={20} /> Dados Pessoais</h3>
               <div className="checkout-form-row">
                 <div className="checkout-field">
                   <label className="checkout-label">Nome completo *</label>
@@ -473,11 +531,11 @@ function CheckoutForm() {
           {/* Step 2: Address */}
           {step === 2 && (
             <div className="checkout-section">
-              <h3>📍 Endereço de Instalação</h3>
+              <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}><MapPin size={20} /> Endereço de Instalação</h3>
               <div className="checkout-form-row">
                 <div className="checkout-field">
                   <label className="checkout-label">CEP *</label>
-                  <input className="checkout-input" type="text" required placeholder="00000-000" value={form.installZip} onChange={(e) => updateField("installZip", e.target.value)} />
+                  <input className="checkout-input" type="text" required placeholder="00000-000" value={form.installZip} onChange={(e) => updateField("installZip", e.target.value)} onBlur={handleCepBlur} />
                 </div>
                 <div className="checkout-field">
                   <label className="checkout-label">Estado *</label>
@@ -519,7 +577,7 @@ function CheckoutForm() {
           {step === 3 && (
             <>
               <div className="checkout-section">
-                <h3>📅 Escolha a data da instalação</h3>
+                <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}><CalendarClock size={20} /> Escolha a data da instalação</h3>
 
                 {Object.keys(slotsByDate).length === 0 ? (
                   <p style={{ color: "#94a3b8", textAlign: "center", padding: "24px" }}>
@@ -569,7 +627,7 @@ function CheckoutForm() {
 
               {/* Order Summary */}
               <div className="checkout-summary">
-                <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "12px" }}>📋 Resumo do Pedido</h3>
+                <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}><ShoppingCart size={18} /> Resumo do Pedido</h3>
                 {product && (
                   <>
                     <div className="checkout-summary-item">
@@ -578,14 +636,14 @@ function CheckoutForm() {
                     </div>
                     {form.scheduledDate && (
                       <div className="checkout-summary-item">
-                        <span>📅 Instalação</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><CalendarDays size={14} /> Instalação</span>
                         <span>{new Date(form.scheduledDate + "T12:00:00").toLocaleDateString("pt-BR")} {form.scheduledTimeStart && `às ${form.scheduledTimeStart}`}</span>
                       </div>
                     )}
                     
                     {/* Coupon Input */}
                     <div className="mt-4 pt-4 border-t border-gray-100">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Cupom de Desconto</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"><Tag size={16} /> Cupom de Desconto</label>
                       <div className="flex gap-2">
                         <input
                           type="text"
@@ -593,7 +651,10 @@ function CheckoutForm() {
                           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                           placeholder="Ex: PROMO10"
                           disabled={!!appliedCoupon}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          style={{
+                            flex: 1, padding: "8px 12px", border: "1px solid #e2e8f0", borderRadius: "8px",
+                            textTransform: "uppercase", fontSize: "14px", outline: "none", background: "#fff"
+                          }}
                         />
                         {!appliedCoupon ? (
                           <button
@@ -614,9 +675,12 @@ function CheckoutForm() {
                               }
                             }}
                             disabled={couponLoading}
-                            className="px-4 py-2 bg-gray-900 text-white text-sm rounded-md hover:bg-gray-800 disabled:opacity-50"
+                            style={{
+                              padding: "8px 16px", background: "#0f172a", color: "#fff", borderRadius: "8px",
+                              fontSize: "14px", fontWeight: 600, border: "none", cursor: "pointer", opacity: couponLoading ? 0.7 : 1
+                            }}
                           >
-                            {couponLoading ? "..." : "Aplicar"}
+                            {couponLoading ? <Loader2 className="animate-spin" size={16} /> : "Aplicar"}
                           </button>
                         ) : (
                           <button
@@ -625,17 +689,20 @@ function CheckoutForm() {
                               setAppliedCoupon(null);
                               setCouponCode("");
                             }}
-                            className="px-4 py-2 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200"
+                            style={{
+                              padding: "8px 16px", background: "#fee2e2", color: "#ef4444", borderRadius: "8px",
+                              fontSize: "14px", fontWeight: 600, border: "none", cursor: "pointer"
+                            }}
                           >
                             Remover
                           </button>
                         )}
                       </div>
-                      {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
+                      {couponError && <p style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>{couponError}</p>}
                     </div>
 
                     {appliedCoupon && (
-                      <div className="checkout-summary-item text-green-600 mt-2 font-medium">
+                      <div className="checkout-summary-item" style={{ color: "#16a34a", fontWeight: 600 }}>
                         <span>Desconto ({appliedCoupon.code})</span>
                         <span>
                           - R$ {appliedCoupon.type === "PERCENTAGE" 
@@ -666,12 +733,12 @@ function CheckoutForm() {
               <div className="checkout-nav-btns">
                 <button type="button" className="checkout-back-btn" onClick={() => setStep(2)}>← Voltar</button>
                 <button type="submit" className="checkout-pay-btn" disabled={loading || !form.scheduledDate}>
-                  {loading ? "Processando..." : "💳 Pagar com Mercado Pago →"}
+                  {loading ? <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}><Loader2 className="animate-spin" /> Processando...</span> : <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}><CreditCard /> Pagar com Mercado Pago</span>}
                 </button>
               </div>
 
-              <p className="checkout-secure">
-                🔒 Pagamento processado com segurança pelo Mercado Pago
+              <p className="checkout-secure" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                <Shield size={14} /> Pagamento processado com segurança pelo Mercado Pago
               </p>
             </>
           )}
