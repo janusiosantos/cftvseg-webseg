@@ -73,7 +73,7 @@ export function orderConfirmationEmail(params: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✅ Pedido Confirmado!</h1>
+          <h1>Pedido Confirmado!</h1>
         </div>
         <div class="content">
           <p>Olá <strong>${params.customerName}</strong>,</p>
@@ -96,7 +96,7 @@ export function orderConfirmationEmail(params: {
           
           ${params.scheduledDate ? `
             <div class="schedule-box">
-              <p style="margin:0 0 8px"><strong>📅 Instalação agendada:</strong></p>
+              <p style="margin:0 0 8px"><strong>Instalação agendada:</strong></p>
               <p style="margin:0"><strong>Data:</strong> ${params.scheduledDate}</p>
               ${params.scheduledTime ? `<p style="margin:4px 0 0"><strong>Horário:</strong> ${params.scheduledTime}</p>` : ""}
             </div>
@@ -153,17 +153,17 @@ export function welcomePartnerEmail(params: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎉 Bem-vindo ao WebSeg!</h1>
+          <h1>Bem-vindo ao WebSeg!</h1>
         </div>
         <div class="content">
           <p>Olá <strong>${params.responsibleName}</strong>,</p>
           <p>A conta da <strong>${params.companyName}</strong> foi criada com sucesso na plataforma WebSeg!</p>
           
           <div class="cred-box">
-            <p style="margin:0 0 8px"><strong>🔐 Credenciais de acesso:</strong></p>
+            <p style="margin:0 0 8px"><strong>Credenciais de acesso:</strong></p>
             <p style="margin:4px 0"><strong>E-mail:</strong> <code>${params.email}</code></p>
             <p style="margin:4px 0"><strong>Senha temporária:</strong> <code>${params.temporaryPassword}</code></p>
-            <p style="margin:8px 0 0; color: #dc2626; font-size: 13px;">⚠️ Altere sua senha no primeiro acesso!</p>
+            <p style="margin:8px 0 0; color: #dc2626; font-size: 13px;">Importante: Altere sua senha no primeiro acesso.</p>
           </div>
           
           <p><strong>Sua loja:</strong> <a href="${storeUrl}">${storeUrl}</a></p>
@@ -219,17 +219,17 @@ export function scheduleConfirmationEmail(params: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>📅 Instalação Agendada!</h1>
+          <h1>Instalação Agendada</h1>
         </div>
         <div class="content">
           <p>Olá <strong>${params.customerName}</strong>,</p>
           <p>Sua instalação foi agendada com sucesso!</p>
           
           <div class="schedule-card">
-            <p class="date">📅 ${params.scheduledDate}</p>
-            <p><strong>⏰ Horário:</strong> ${params.scheduledTime}</p>
-            <p><strong>📍 Local:</strong> ${params.address}</p>
-            ${params.technicianName ? `<p><strong>👷 Técnico:</strong> ${params.technicianName}</p>` : ""}
+            <p class="date">${params.scheduledDate}</p>
+            <p><strong>Horário:</strong> ${params.scheduledTime}</p>
+            <p><strong>Local:</strong> ${params.address}</p>
+            ${params.technicianName ? `<p><strong>Técnico responsável:</strong> ${params.technicianName}</p>` : ""}
           </div>
           
           <p>A equipe da <strong>${params.partnerName}</strong> estará no local no horário combinado.
@@ -272,17 +272,17 @@ export function welcomeTechnicianEmail(params: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>👷 Bem-vindo à Equipe!</h1>
+          <h1>Bem-vindo à Equipe!</h1>
         </div>
         <div class="content">
           <p>Olá <strong>${params.technicianName}</strong>,</p>
           <p>Você foi adicionado(a) como técnico(a) da equipe <strong>${params.companyName}</strong>.</p>
           
           <div class="cred-box">
-            <p style="margin:0 0 8px"><strong>🔐 Suas credenciais de acesso:</strong></p>
+            <p style="margin:0 0 8px"><strong>Suas credenciais de acesso:</strong></p>
             <p style="margin:4px 0"><strong>E-mail:</strong> <code>${params.email}</code></p>
             <p style="margin:4px 0"><strong>Senha temporária:</strong> <code>${params.temporaryPassword}</code></p>
-            <p style="margin:8px 0 0; color: #dc2626; font-size: 13px;">⚠️ Por motivos de segurança, você deve alterar sua senha no App em "Perfil" após o primeiro acesso.</p>
+            <p style="margin:8px 0 0; color: #dc2626; font-size: 13px;">Importante: Por motivos de segurança, altere sua senha no App em "Perfil" após o primeiro acesso.</p>
           </div>
           
           <p style="text-align: center">

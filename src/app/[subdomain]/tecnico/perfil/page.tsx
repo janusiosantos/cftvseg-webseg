@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function TechnicianProfilePage() {
   const router = useRouter();
@@ -62,78 +63,78 @@ export default function TechnicianProfilePage() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="tech-profile-page">
+      <div className="tech-profile-header">
         <button
           onClick={() => router.push("./")}
-          className="w-10 h-10 flex items-center justify-center bg-white rounded-full text-gray-500 shadow-sm"
+          className="tech-back-btn"
         >
-          ←
+          <ArrowLeft size={18} />
         </button>
-        <h1 className="text-2xl font-bold text-gray-800">Meu Perfil</h1>
+        <h1 className="tech-profile-title">Meu Perfil</h1>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-6">Alterar Senha</h2>
+      <div className="tech-card">
+        <h2 className="tech-card-title">Alterar Senha</h2>
 
         {success && (
-          <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-xl text-sm font-medium">
+          <div className="tech-alert success">
             Senha alterada com sucesso!
           </div>
         )}
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium">
+          <div className="tech-alert error">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="tech-form">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Senha Atual</label>
+            <label className="tech-form-label">Senha Atual</label>
             <input
               type="password"
               name="currentPassword"
               required
               value={form.currentPassword}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#6366f1] focus:border-[#6366f1] transition-all"
+              className="tech-form-input"
               placeholder="••••••••"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nova Senha</label>
+            <label className="tech-form-label">Nova Senha</label>
             <input
               type="password"
               name="newPassword"
               required
               value={form.newPassword}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#6366f1] focus:border-[#6366f1] transition-all"
+              className="tech-form-input"
               placeholder="••••••••"
             />
-            <p className="text-xs text-gray-400 mt-1">Mínimo de 6 caracteres.</p>
+            <p className="tech-form-hint">Mínimo de 6 caracteres.</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar Nova Senha</label>
+            <label className="tech-form-label">Confirmar Nova Senha</label>
             <input
               type="password"
               name="confirmPassword"
               required
               value={form.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#6366f1] focus:border-[#6366f1] transition-all"
+              className="tech-form-input"
               placeholder="••••••••"
             />
           </div>
 
-          <div className="pt-4">
+          <div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-[#6366f1] text-white font-semibold rounded-xl hover:bg-[#4f46e5] transition-colors disabled:opacity-50"
+              className="tech-form-submit"
             >
               {loading ? "Salvando..." : "Atualizar Senha"}
             </button>

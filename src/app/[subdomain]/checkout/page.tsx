@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { validateCpf as validateCpfLib } from "@/lib/cpf";
-import { User, MapPin, CalendarClock, Shield, CreditCard, CheckCircle2, ChevronRight, Loader2, Tag, ShoppingCart, CalendarDays } from "lucide-react";
+import { User, MapPin, CalendarClock, Shield, CreditCard, CheckCircle2, ChevronRight, Loader2, Tag, ShoppingCart, CalendarDays, AlertTriangle } from "lucide-react";
 
 interface Product {
   id: string;
@@ -31,11 +31,25 @@ function CheckoutForm() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cepLoading, setCepLoading] = useState(false);
   
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: string; value: number } | null>(null);
   const [couponError, setCouponError] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
+
+  // Input masks
+  function maskCpf(value: string) {
+    return value.replace(/\D/g, "").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2").slice(0, 14);
+  }
+  function maskPhone(value: string) {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length <= 10) return digits.replace(/(\d{2})(\d)/, "($1) $2").replace(/(\d{4})(\d)/, "$1-$2");
+    return digits.replace(/(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2").slice(0, 15);
+  }
+  function maskCep(value: string) {
+    return value.replace(/\D/g, "").replace(/(\d{5})(\d)/, "$1-$2").slice(0, 9);
+  }
 
   const [form, setForm] = useState({
     customerName: "",
@@ -80,6 +94,7 @@ function CheckoutForm() {
     const cep = form.installZip.replace(/\D/g, "");
     if (cep.length !== 8) return;
 
+    setCepLoading(true);
     try {
       const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
       const data = await res.json();
@@ -94,7 +109,16 @@ function CheckoutForm() {
       }
     } catch (err) {
       console.error("Erro ao buscar CEP", err);
+    } finally {
+      setCepLoading(false);
     }
+  }
+
+  function canAdvanceStep1() {
+    return form.customerName.trim() && form.customerCpf.replace(/\D/g, "").length === 11 && form.customerEmail.trim() && form.customerPhone.replace(/\D/g, "").length >= 10;
+  }
+  function canAdvanceStep2() {
+    return form.installZip.replace(/\D/g, "").length === 8 && form.installAddress.trim() && form.installNumber.trim() && form.installCity.trim() && form.installState.trim();
   }
 
   function selectSlot(slot: Slot) {
@@ -459,6 +483,15 @@ function CheckoutForm() {
           font-size: 12px;
           color: #94a3b8;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-spin { animation: spin 1s linear infinite; }
+        .cep-loading-indicator {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--store-primary, #6366f1);
+        }
 
         @media (max-width: 768px) {
           .checkout-form-row { grid-template-columns: 1fr; }
@@ -488,7 +521,7 @@ function CheckoutForm() {
 
         {error && (
           <div className="checkout-error">
-            <span style={{ fontSize: "20px" }}>⚠️</span>
+            <AlertTriangle size={20} style={{ flexShrink: 0, color: "#ef4444" }} />
             <div>
               <strong>Ops, ocorreu um problema</strong>
               <p style={{ marginTop: "4px" }}>{error}</p>
@@ -508,7 +541,7 @@ function CheckoutForm() {
                 </div>
                 <div className="checkout-field">
                   <label className="checkout-label">CPF *</label>
-                  <input className="checkout-input" type="text" required placeholder="000.000.000-00" value={form.customerCpf} onChange={(e) => updateField("customerCpf", e.target.value)} />
+                  <input className="checkout-input" type="text" required placeholder="000.000.000-00" value={form.customerCpf} onChange={(e) => updateField("customerCpf", maskCpf(e.target.value))} maxLength={14} />
                 </div>
               </div>
               <div className="checkout-form-row">
@@ -518,12 +551,12 @@ function CheckoutForm() {
                 </div>
                 <div className="checkout-field">
                   <label className="checkout-label">Telefone *</label>
-                  <input className="checkout-input" type="tel" required placeholder="(11) 99999-9999" value={form.customerPhone} onChange={(e) => updateField("customerPhone", e.target.value)} />
+                  <input className="checkout-input" type="tel" required placeholder="(11) 99999-9999" value={form.customerPhone} onChange={(e) => updateField("customerPhone", maskPhone(e.target.value))} maxLength={15} />
                 </div>
               </div>
               <div className="checkout-nav-btns">
                 <a href={`/?tenant=${tenant}`} className="checkout-back-btn">← Voltar à loja</a>
-                <button type="button" className="checkout-next-btn" onClick={() => setStep(2)}>Continuar →</button>
+                <button type="button" className="checkout-next-btn" disabled={!canAdvanceStep1()} onClick={() => setStep(2)} style={{ opacity: canAdvanceStep1() ? 1 : 0.5 }}>Continuar →</button>
               </div>
             </div>
           )}
@@ -535,7 +568,10 @@ function CheckoutForm() {
               <div className="checkout-form-row">
                 <div className="checkout-field">
                   <label className="checkout-label">CEP *</label>
-                  <input className="checkout-input" type="text" required placeholder="00000-000" value={form.installZip} onChange={(e) => updateField("installZip", e.target.value)} onBlur={handleCepBlur} />
+                  <div style={{ position: "relative" }}>
+                    <input className="checkout-input" type="text" required placeholder="00000-000" value={form.installZip} onChange={(e) => updateField("installZip", maskCep(e.target.value))} onBlur={handleCepBlur} maxLength={9} />
+                    {cepLoading && <div className="cep-loading-indicator"><Loader2 size={16} className="animate-spin" /></div>}
+                  </div>
                 </div>
                 <div className="checkout-field">
                   <label className="checkout-label">Estado *</label>
@@ -568,7 +604,7 @@ function CheckoutForm() {
               </div>
               <div className="checkout-nav-btns">
                 <button type="button" className="checkout-back-btn" onClick={() => setStep(1)}>← Voltar</button>
-                <button type="button" className="checkout-next-btn" onClick={() => setStep(3)}>Continuar →</button>
+                <button type="button" className="checkout-next-btn" disabled={!canAdvanceStep2()} onClick={() => setStep(3)} style={{ opacity: canAdvanceStep2() ? 1 : 0.5 }}>Continuar →</button>
               </div>
             </div>
           )}
@@ -642,9 +678,9 @@ function CheckoutForm() {
                     )}
                     
                     {/* Coupon Input */}
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"><Tag size={16} /> Cupom de Desconto</label>
-                      <div className="flex gap-2">
+                    <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #e2e8f0" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", fontWeight: 600, color: "#475569", marginBottom: "8px" }}><Tag size={16} /> Cupom de Desconto</label>
+                      <div style={{ display: "flex", gap: "8px" }}>
                         <input
                           type="text"
                           value={couponCode}
@@ -712,7 +748,7 @@ function CheckoutForm() {
                       </div>
                     )}
 
-                    <div className="checkout-summary-total mt-4 pt-4 border-t border-gray-200">
+                    <div className="checkout-summary-total">
                       <span>Total</span>
                       <span>R$ {(() => {
                         let total = product.price;

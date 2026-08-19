@@ -30,73 +30,190 @@ export default async function SucessoPage({ params, searchParams }: Props) {
   const isPending = status === "pending";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div 
-          className="h-32 flex items-center justify-center relative"
-          style={{ background: `linear-gradient(135deg, ${tenant.primaryColor}, ${tenant.secondaryColor})` }}
-        >
-          <div className="absolute -bottom-10 bg-white p-2 rounded-full shadow-lg">
-            {isPending ? (
-              <Clock size={64} className="text-yellow-500" />
-            ) : (
-              <CheckCircle2 size={64} className="text-green-500" />
-            )}
+    <>
+      <style>{`
+        .success-page {
+          min-height: 80vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+        }
+        .success-card {
+          max-width: 480px;
+          width: 100%;
+          background: #fff;
+          border-radius: 20px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+          overflow: hidden;
+        }
+        .success-banner {
+          height: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        }
+        .success-icon-wrapper {
+          position: absolute;
+          bottom: -28px;
+          background: #fff;
+          padding: 8px;
+          border-radius: 50%;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .success-body {
+          padding: 48px 32px 32px;
+          text-align: center;
+        }
+        .success-title {
+          font-size: 24px;
+          font-weight: 800;
+          color: #0f172a;
+          margin-bottom: 8px;
+        }
+        .success-desc {
+          font-size: 15px;
+          color: #64748b;
+          margin-bottom: 32px;
+          line-height: 1.6;
+        }
+        .success-details {
+          text-align: left;
+          background: #f8fafc;
+          border-radius: 14px;
+          padding: 24px;
+          margin-bottom: 32px;
+          border: 1px solid #f1f5f9;
+        }
+        .success-details-title {
+          font-size: 15px;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 16px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        .success-detail-row {
+          display: flex;
+          align-items: flex-start;
+          margin-bottom: 14px;
+        }
+        .success-detail-row:last-child {
+          margin-bottom: 0;
+        }
+        .success-detail-row svg {
+          width: 18px;
+          height: 18px;
+          color: #94a3b8;
+          margin-right: 12px;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
+        .success-detail-main {
+          font-size: 14px;
+          font-weight: 600;
+          color: #0f172a;
+        }
+        .success-detail-sub {
+          font-size: 13px;
+          color: #64748b;
+          margin-top: 2px;
+        }
+        .success-contact {
+          font-size: 14px;
+          color: #64748b;
+          margin-bottom: 32px;
+          line-height: 1.6;
+        }
+        .success-contact strong {
+          color: #0f172a;
+        }
+        .success-cta {
+          display: block;
+          width: 100%;
+          text-align: center;
+          padding: 14px;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 15px;
+          color: #fff;
+          text-decoration: none;
+          transition: all 200ms;
+        }
+        .success-cta:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+        }
+      `}</style>
+
+      <div className="success-page">
+        <div className="success-card">
+          <div 
+            className="success-banner"
+            style={{ background: `linear-gradient(135deg, ${tenant.primaryColor}, ${tenant.secondaryColor})` }}
+          >
+            <div className="success-icon-wrapper">
+              {isPending ? (
+                <Clock size={56} color="#f59e0b" />
+              ) : (
+                <CheckCircle2 size={56} color="#22c55e" />
+              )}
+            </div>
           </div>
-        </div>
-        
-        <div className="pt-16 px-8 pb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {isPending ? "Pagamento em Processamento" : "Pedido Confirmado!"}
-          </h1>
-          <p className="text-gray-600 mb-8">
-            {isPending 
-              ? "Estamos aguardando a confirmação do pagamento. Você receberá um e-mail em breve." 
-              : `Obrigado por escolher a ${tenant.companyName}. Sua instalação foi agendada com sucesso.`}
-          </p>
           
-          {order && (
-            <div className="text-left bg-gray-50 rounded-xl p-6 mb-8 border border-gray-100">
-              <h3 className="font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Detalhes da Instalação</h3>
-              
-              <div className="space-y-4 text-sm">
-                <div className="flex items-start">
-                  <Calendar className="text-gray-400 mr-3 shrink-0 mt-0.5" size={18} />
+          <div className="success-body">
+            <h1 className="success-title">
+              {isPending ? "Pagamento em Processamento" : "Pedido Confirmado!"}
+            </h1>
+            <p className="success-desc">
+              {isPending 
+                ? "Estamos aguardando a confirmação do pagamento. Você receberá um e-mail em breve." 
+                : `Obrigado por escolher a ${tenant.companyName}. Sua instalação foi agendada com sucesso.`}
+            </p>
+            
+            {order && (
+              <div className="success-details">
+                <h3 className="success-details-title">Detalhes da Instalação</h3>
+                
+                <div className="success-detail-row">
+                  <Calendar size={18} />
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="success-detail-main">
                       {order.scheduledDate ? formatDateLong(order.scheduledDate) : "Data a definir"}
                     </p>
                     {order.scheduledTimeStart && (
-                      <p className="text-gray-500">Entre {order.scheduledTimeStart} e {order.scheduledTimeEnd}</p>
+                      <p className="success-detail-sub">Entre {order.scheduledTimeStart} e {order.scheduledTimeEnd}</p>
                     )}
                   </div>
                 </div>
                 
-                <div className="flex items-start">
-                  <MapPin className="text-gray-400 mr-3 shrink-0 mt-0.5" size={18} />
+                <div className="success-detail-row">
+                  <MapPin size={18} />
                   <div>
-                    <p className="font-medium text-gray-900">{order.installAddress}, {order.installNumber}</p>
-                    <p className="text-gray-500">{order.installCity} - {order.installState}</p>
+                    <p className="success-detail-main">{order.installAddress}, {order.installNumber}</p>
+                    <p className="success-detail-sub">{order.installCity} - {order.installState}</p>
                   </div>
                 </div>
               </div>
+            )}
+
+            <div className="success-contact">
+              Em caso de dúvidas, entre em contato através do nosso WhatsApp: <br/>
+              <strong>{tenant.publicPhone || tenant.phone}</strong>
             </div>
-          )}
 
-          <div className="text-sm text-gray-500 mb-8">
-            Em caso de dúvidas, entre em contato através do nosso WhatsApp: <br/>
-            <strong className="text-gray-800">{tenant.publicPhone || tenant.phone}</strong>
+            <Link
+              href={`/?tenant=${subdomain}`}
+              className="success-cta"
+              style={{ backgroundColor: tenant.primaryColor }}
+            >
+              Voltar para o site
+            </Link>
           </div>
-
-          <Link
-            href={`/?tenant=${subdomain}`}
-            className="block w-full text-center py-3 rounded-xl font-medium text-white shadow-md hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: tenant.primaryColor }}
-          >
-            Voltar para o site
-          </Link>
         </div>
       </div>
-    </div>
+    </>
   );
 }

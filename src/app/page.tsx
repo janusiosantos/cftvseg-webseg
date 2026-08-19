@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import "./landing.css";
 import { PLANS } from "@/lib/constants";
-import { Shield, Video, Camera, Zap, ShoppingCart, CalendarDays, CreditCard, BarChart, HardHat, Mail, Rocket, CircleDollarSign, Lock, Smartphone, CheckCircle, XCircle } from "lucide-react";
+import { Shield, Video, Camera, Zap, ShoppingCart, CalendarDays, CreditCard, BarChart, HardHat, Mail, Rocket, CircleDollarSign, Lock, Smartphone, CheckCircle, XCircle, Menu, X } from "lucide-react";
 
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,6 +15,7 @@ export default function LandingPage() {
     message: "",
   });
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -83,9 +84,21 @@ export default function LandingPage() {
             <a href="#contato">Contato</a>
             <a href="/login" className="nav-cta">Entrar</a>
           </div>
-          <button className="nav-mobile-toggle" aria-label="Menu">
-            ☰
+          <button className="nav-mobile-toggle" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="nav-mobile-overlay" onClick={() => setMobileMenuOpen(false)} />
+        )}
+        <div className={`nav-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Funcionalidades</a>
+          <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)}>Como Funciona</a>
+          <a href="#precos" onClick={() => setMobileMenuOpen(false)}>Preços</a>
+          <a href="#contato" onClick={() => setMobileMenuOpen(false)}>Contato</a>
+          <a href="/login" className="nav-cta" onClick={() => setMobileMenuOpen(false)}>Entrar</a>
         </div>
       </nav>
 

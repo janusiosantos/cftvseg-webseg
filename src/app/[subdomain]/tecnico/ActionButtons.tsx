@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 interface Props {
   orderId: string;
@@ -9,10 +8,10 @@ interface Props {
 }
 
 export function ActionButtons({ orderId, status }: Props) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(status);
 
-  const handleStatusChange = async (newStatus: string) => {
+  async function updateStatus(newStatus: string) {
     setLoading(true);
     try {
       const res = await fetch(`/api/technician/orders/${orderId}/status`, {
@@ -20,53 +19,52 @@ export function ActionButtons({ orderId, status }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
-
-      if (!res.ok) {
-        throw new Error("Erro ao atualizar status");
+      if (res.ok) {
+        setCurrentStatus(newStatus);
+        if (newStatus === "COMPLETED") {
+          window.location.reload();
+        }
       }
-
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Falha ao comunicar com o servidor.");
+    } catch (err) {
+      console.error("Erro ao atualizar status", err);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  if (status === "COMPLETED") {
+  if (currentStatus === "COMPLETED") {
     return (
-      <div className="w-full text-center py-2 text-sm font-semibold text-green-600 bg-green-50 rounded-lg">
+      <div className="tech-completed-status">
         Serviço Concluído
       </div>
     );
   }
 
   return (
-    <div className="flex gap-2 w-full">
-      {status !== "IN_PROGRESS" ? (
+    <div className="tech-action-btns">
+      {currentStatus === "SCHEDULED" && (
         <button
+          onClick={() => updateStatus("IN_PROGRESS")}
           disabled={loading}
-          onClick={() => handleStatusChange("IN_PROGRESS")}
-          className="flex-1 bg-[var(--tenant-primary)] text-white py-2 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50"
+          className="tech-action-btn primary"
         >
-          {loading ? "Aguarde..." : "Fazer Check-in"}
-        </button>
-      ) : (
-        <button
-          disabled={loading}
-          onClick={() => handleStatusChange("COMPLETED")}
-          className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
-        >
-          {loading ? "Aguarde..." : "Concluir Serviço"}
+          {loading ? "Atualizando..." : "Iniciar Serviço"}
         </button>
       )}
-      
-      <button 
-        disabled={loading}
-        className="px-4 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-200"
+      {currentStatus === "IN_PROGRESS" && (
+        <button
+          onClick={() => updateStatus("COMPLETED")}
+          disabled={loading}
+          className="tech-action-btn success"
+        >
+          {loading ? "Finalizando..." : "Finalizar Serviço"}
+        </button>
+      )}
+      <button
+        onClick={() => window.location.reload()}
+        className="tech-action-btn secondary"
       >
-        Rotas
+        Atualizar
       </button>
     </div>
   );

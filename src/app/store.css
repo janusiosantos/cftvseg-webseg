@@ -16,13 +16,16 @@
 
 /* Store Header */
 .store-header {
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
   padding: 16px 0;
   position: sticky;
   top: 0;
   z-index: 40;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all 200ms ease;
 }
 
 .store-header-inner {
@@ -199,26 +202,26 @@
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   overflow: hidden;
-  transition: all 250ms ease;
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.1);
   border-color: var(--store-primary);
 }
 
 .product-card-img {
   aspect-ratio: 4/3;
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
   position: relative;
   overflow: hidden;
   color: #cbd5e1;
@@ -227,7 +230,12 @@
 .product-card-img svg {
   width: 64px;
   height: 64px;
-  opacity: 0.8;
+  opacity: 0.85;
+  transition: transform 300ms ease;
+}
+
+.product-card:hover .product-card-img svg {
+  transform: scale(1.08);
 }
 
 .product-card-badge {
