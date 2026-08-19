@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ReviewForm } from "./ReviewForm";
 import { Star, AlertCircle, CheckCircle } from "lucide-react";
-import "../../../../store.css";
+import "@/app/store.css";
 
 export default async function AvaliarPedidoPage({ params }: { params: Promise<{ subdomain: string; id: string }> }) {
   const { subdomain, id } = await params;
